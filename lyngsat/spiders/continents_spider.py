@@ -44,8 +44,8 @@ class ContinetsSpider(scrapy.Spider):
                 sat = Satellite(continent=continent, url=url, grade=grade, name=name, band=band,
                                 date=date)
                 satellites.append(sat)
-            else:
-                print("Don't parsed line: " + "".join(line))
+            #else:
+            #    print("Don't parsed line: " + "".join(line))
 
         with open("data/"+continent+".csv", 'w+') as csv_file:
             wr = csv.writer(csv_file, delimiter=';')

@@ -11,7 +11,7 @@ class SatellitesSpider(scrapy.Spider):
 
     def parse(self, response):
         satellite = response.url.split("/")[-1].split(".")[0]
-        filename = 'satellite-%s.html' % satellite
+        filename = 'data/satellite-%s.html' % satellite
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log('Saved file %s' % filename)

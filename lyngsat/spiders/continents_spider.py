@@ -2,20 +2,25 @@ import csv
 import scrapy
 
 from lyngsat.model.satellite import Satellite
+from lyngsat.spiders.satellites_spider import SatellitesSpider
 
 
 class ContinetsSpider(scrapy.Spider):
     name = "continents"
 
     def start_requests(self):
-        urls = [
-            'https://www.lyngsat.com/asia.html',
-            'https://www.lyngsat.com/europe.html',
-            'https://www.lyngsat.com/atlantic.html',
-            'https://www.lyngsat.com/america.html',
-        ]
-        for url in urls:
+        url = getattr(self, 'url', None)
+        if url is not None:
             yield scrapy.Request(url=url, callback=self.parse)
+        else:
+            urls = [
+                'https://www.lyngsat.com/asia.html',
+                'https://www.lyngsat.com/europe.html',
+                'https://www.lyngsat.com/atlantic.html',
+                'https://www.lyngsat.com/america.html',
+            ]
+            for url in urls:
+                yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         continent = response.url.split("/")[-1].split(".")[0]
@@ -35,7 +40,7 @@ class ContinetsSpider(scrapy.Spider):
                     grade = "".join(scrapy.Selector(text=line[1]).xpath("//text()").getall())
                     previous_grade = grade
                     index = 1
-                url = "https://www.lyngsat.com/" + scrapy.Selector(text=line[1]).css('a').attrib['href']
+                url =  "https://www.lyngsat.com/"+scrapy.Selector(text=line[1]).css('a').attrib['href']
                 name = "".join(scrapy.Selector(text=line[index+1]).xpath("//text()").getall())
                 band = "".join(scrapy.Selector(text=line[index+2]).xpath("//text()").getall()).strip()
                 date = "".join(scrapy.Selector(text=line[index+3]).xpath("//text()").getall())

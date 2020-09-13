@@ -9,7 +9,7 @@ You need to have installed the python [![scrapy](https://scrapy.org/)] library.
 There are two spiders, one to obtain the satellites of each continent, and another to obtain the information of each satellite (in process)
 
 ### Continents
-Executing this command `scrapy crawl continents` save in a csv the different satellites that exist per continent.
+Executing this command `scrapy crawl continents -o continents.json` save in a json the different satellites that exist per continent.
 
-Executing this command `scrapy crawl continents -a url="https://www.lyngsat.com/europe.html"` this will only execute for europe.
+Executing this command `scrapy crawl continents -a url="https://www.lyngsat.com/europe.html" -o europe.json` this will only execute for europe.
 

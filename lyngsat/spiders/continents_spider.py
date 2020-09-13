@@ -1,8 +1,10 @@
 import csv
+import json
+
 import scrapy
 
-from lyngsat.model.satellite import Satellite
-from lyngsat.spiders.satellites_spider import SatellitesSpider
+from lyngsat.items import Satellites
+from lyngsat.items import Satellite
 
 
 class ContinetsSpider(scrapy.Spider):
@@ -15,9 +17,9 @@ class ContinetsSpider(scrapy.Spider):
         else:
             urls = [
                 'https://www.lyngsat.com/asia.html',
-                'https://www.lyngsat.com/europe.html',
-                'https://www.lyngsat.com/atlantic.html',
-                'https://www.lyngsat.com/america.html',
+                # 'https://www.lyngsat.com/europe.html',
+                # 'https://www.lyngsat.com/atlantic.html',
+                # 'https://www.lyngsat.com/america.html',
             ]
             for url in urls:
                 yield scrapy.Request(url=url, callback=self.parse)
@@ -35,25 +37,29 @@ class ContinetsSpider(scrapy.Spider):
             line = scrapy.Selector(text=row).xpath("//td").getall()
 
             if len(line) == 5 or len(line) == 4:
-                index = 0;
+                index = 0
                 if len(line) == 5:
                     grade = "".join(scrapy.Selector(text=line[1]).xpath("//text()").getall())
                     previous_grade = grade
                     index = 1
-                url =  "https://www.lyngsat.com/"+scrapy.Selector(text=line[1]).css('a').attrib['href']
-                name = "".join(scrapy.Selector(text=line[index+1]).xpath("//text()").getall())
-                band = "".join(scrapy.Selector(text=line[index+2]).xpath("//text()").getall()).strip()
-                date = "".join(scrapy.Selector(text=line[index+3]).xpath("//text()").getall())
+                url = "https://www.lyngsat.com/" + scrapy.Selector(text=line[1]).css('a').attrib['href']
+                name = "".join(scrapy.Selector(text=line[index + 1]).xpath("//text()").getall())
+                band = "".join(scrapy.Selector(text=line[index + 2]).xpath("//text()").getall()).strip()
+                date = "".join(scrapy.Selector(text=line[index + 3]).xpath("//text()").getall())
                 grade = previous_grade
 
                 sat = Satellite(continent=continent, url=url, grade=grade, name=name, band=band,
                                 date=date)
                 satellites.append(sat)
-            #else:
+            # else:
             #    print("Don't parsed line: " + "".join(line))
 
-        with open("data/"+continent+".csv", 'w+') as csv_file:
-            wr = csv.writer(csv_file, delimiter=';')
-            for item in satellites:
-                wr.writerow(list(item))
-        self.log('Saved file %s' % filename)
+        # with open("data/continents/"+continent+".csv", 'w+') as csv_file:
+        #     wr = csv.writer(csv_file, delimiter=';')
+        #     for item in satellites:
+        #         wr.writerow(list(item))
+        # self.log('Saved file %s' % filename)
+
+        # return json.dumps([ob.__dict__ for ob in satellites])
+
+        yield Satellites(satellites=satellites)
